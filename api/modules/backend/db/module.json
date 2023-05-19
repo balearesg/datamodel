@@ -1,0 +1,10 @@
+{
+  "name": "db",
+  "ts": {
+    "path": "ts",
+    "files": [
+      "*"
+    ]
+  },
+  "platforms": ["node", "backend"]
+}

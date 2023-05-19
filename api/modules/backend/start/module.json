@@ -1,0 +1,8 @@
+{
+  "name": "backend",
+  "bundle": "start",
+  "platforms": "backend",
+  "ts": {
+    "files": "*"
+  }
+}

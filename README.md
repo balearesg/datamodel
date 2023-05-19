@@ -17,11 +17,7 @@ A medida que avances en el proyecto, se proporcionarán más detalles sobre el f
 ## Instalación
 
 1. Dentro de tu proyecto clonar este repositorio e incluirlo en el proyecto
-2. Instalar las dependencias usando:
-    npm i
-    o
-
-    npm install
+2. Instalar las dependencias usando: npm i o npm install
 
 
 ## Uso

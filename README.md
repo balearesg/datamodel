@@ -23,7 +23,7 @@ A medida que avances en el proyecto, se proporcionarán más detalles sobre el f
 ## Uso
 Una vez tengas incorporado en el data-models en tu proyecto se debe realizar la importación de la siguiente manera:
 
-    **import {DataModel, actions} from "data-model/db"**
+    import {DataModel, actions} from "data-model/db"
 
 Ya obteniendo ambos objetos podemos comenzar con el funcionamiento. A continuación se indicará el uso de cada método para el Data Model
 

@@ -57,7 +57,8 @@ class Actions {
 			if(!model.rawAttributes.hasOwnProperty(key) && !this._OPERATORS.hasOwnProperty(key)) continue;
 			const fieldOrOperator = model.rawAttributes.hasOwnProperty(key)? key : this._OPERATORS[key];
 			const value = typeof where[key] ==="object" && !Array.isArray(where[key])?
-				this.processInternalAttributes(model, where[key], key) : where[key];
+				this.processInternalAttributes(model, where[key], key) :Array.isArray(where[key]) && (key === 'and' || key === 'or')?
+        this.processInternalAttributes(model, where[key], key) : where[key];
 			fields[fieldOrOperator] = value;
 			filters.push(fields);
 		}
@@ -71,7 +72,8 @@ class Actions {
 			if(!model.rawAttributes.hasOwnProperty(field) && !this.OPERATORS.hasOwnProperty(field)) continue;
 			const fieldOrOperator = model.rawAttributes.hasOwnProperty(field)? field : this.OPERATORS[field];
 			const value = typeof where[field] ==="object" && !Array.isArray(where[field])?
-				this.processInternalAttributes(model, where[field], field) : where[field];
+      this.processInternalAttributes(model, where[field], field) : Array.isArray(where[field]) && (field === 'and' || field === 'or')? 
+      this.processInternalAttributes(model, where[field], field) : where[field];
 			filters[fieldOrOperator] = value;
 		}
 		

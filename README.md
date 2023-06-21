@@ -33,7 +33,7 @@ Ya obteniendo ambos objetos podemos comenzar con el funcionamiento. A continuaci
         const dbConnected = DataModel.connectDB(credentials);
         ```
 
-        En donde credentials tiene las siguientes propiedad:
+        En donde credentials tiene las siguientes propiedad definidas en el .env:
 
         * dbName: Indica el nombre de la BD a conectar
         * dbUser: Usuario
@@ -95,6 +95,26 @@ Ahora para actions
     - La función list permite listar una consulta. Por ejemplo:
 
         ```
+        const params = {
+            order: "id",
+            asc: "ASC",
+            limit: 10,
+            start: 10,
+            attributes: ["id", "name", "quantity"],
+            where = { 
+                id: [10,30,40,50],
+                date: {
+                    between: ['2020-01-01','2020-12-31']
+                },
+                and: {
+                    name: "pedro",
+                    quatity: {
+                        gt: 10
+                    },
+                    or: {status: 1}
+                },
+            }
+        }
         const results = await actions.list(model, params, target)
         ```
 
@@ -109,6 +129,9 @@ Ahora para actions
     - La función data toma la información de un solo registro de la base de datos por medio de un id. Por ejemplo:
 
         ```
+        const params = {
+            id: 2
+        }
         const data = await actions.data(model, params, target)
         ```
 
@@ -117,6 +140,9 @@ Ahora para actions
     - La función remove tiene como objetivo borrar un registro por id
 
         ```
+        const params = {
+            id: 2
+        }
         const remove = await actions.remove(params, model, target);
         ```
 

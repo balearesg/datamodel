@@ -93,7 +93,7 @@ class Actions {
 		try {
       //   const filters = params?.filter ?? this.processFilters(model, params);
       const filters = params?.filter ?? this.processFilters(model, params.where);
-      const attributes = params.attributes ?? model.rawAttributes;
+      const attributes = params.attributes ?? Object.keys(model.rawAttributes);
       const dataModel = await model.findAll({
         attributes,
         order,

@@ -13,11 +13,6 @@
 			"es"
 		]
 	},
-	"libraries": {
-		"imports": [
-			"@bg/mailer"
-		]
-	},
 	"modules": {
 		"path": "modules"
 	},

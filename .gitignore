@@ -1,0 +1,7 @@
+.idea
+node_modules
+.beyond
+package-lock.json
+logs
+.vscode
+downloads-plans

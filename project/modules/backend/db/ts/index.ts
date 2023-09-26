@@ -2,15 +2,15 @@ import { Sequelize } from "sequelize";
 import { Logs } from "./logs";
 
 /* eliminar db para mantener semantica*/
-interface ICredentials {
-	name: string,
-	user: string,
-	password: string,
-	host: string,
-	timeZone?: string | undefined | null,
-	storage?: string | undefined | null,
-	dialect: any,
-	initModels: any
+export /*bundle*/ interface ICredentials {
+	name: string;
+	user: string;
+	password: string;
+	host: string;
+	timeZone?: string | undefined | null;
+	storage?: string | undefined | null;
+	dialect: any;
+	initModels: any;
 }
 
 export /*bundle*/

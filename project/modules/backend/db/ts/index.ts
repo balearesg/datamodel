@@ -1,17 +1,7 @@
 import { Sequelize } from "sequelize";
 import { Logs } from "./logs";
+import { ICredentials } from "./interfaces/credentials";
 
-/* eliminar db para mantener semantica*/
-export /*bundle*/ interface ICredentials {
-	name: string;
-	user: string;
-	password: string;
-	host: string;
-	timeZone?: string | undefined | null;
-	storage?: string | undefined | null;
-	dialect: any;
-	initModels: any;
-}
 
 export /*bundle*/
 class DataModel {

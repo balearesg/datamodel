@@ -145,7 +145,6 @@ class Actions {
 			if (!dataModel) throw 'RECORD_NOT_EXIST';
 
 			const data = dataModel.get({ plain: true });
-
 			return response.data(data);
 		} catch (exc) {
 			return response.processError(exc, target);

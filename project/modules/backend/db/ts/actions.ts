@@ -151,7 +151,7 @@ class Actions {
 		}
 	};
 
-	remove = async ({ id }, model, target) => {
+	remove = async (model, { id }, target) => {
 		try {
 			await model.destroy({ where: { id } });
 			return response.remove();

@@ -1,9 +1,9 @@
-import {Op} from 'sequelize';
+import { Op } from 'sequelize';
 // import { Params } from "@app/trade-market/utils";
-import {response} from 'data-model/response';
+import { response } from 'data-model/response';
 
 class Actions {
-	_DEFAULT = {order: 'timeCreated', limit: 30, start: 0};
+	_DEFAULT = { order: 'timeCreated', limit: 30, start: 0 };
 	get DEFAULT() {
 		return this._DEFAULT;
 	}
@@ -35,7 +35,7 @@ class Actions {
 	get op() {
 		return this._op;
 	}
-	
+
 	/* filter 'and' || 'or' to process items. Else set value in the field*/
 	private processInternalAttributes = (model, where, fieldParent) => {
 		const fields = {};
@@ -67,7 +67,7 @@ class Actions {
 					: elem[key];
 
 			if (typeof value === 'string') {
-				value = {[this._OPERATORS['like']]: value};
+				value = { [this._OPERATORS['like']]: value };
 			}
 			fields[fieldOrOperator] = value;
 			filters.push(fields);
@@ -89,7 +89,7 @@ class Actions {
 					? this.processInternalAttributes(model, where[field], field)
 					: where[field];
 			if (typeof value === 'string') {
-				value = {[this._OPERATORS['like']]: value};
+				value = { [this._OPERATORS['like']]: value };
 			}
 			// if (typeof value === "string") {
 			//   fieldOrOperator = this.OPERATORS[`like`]
@@ -116,18 +116,21 @@ class Actions {
 			//   const filters = params?.filter ?? this.processFilters(model, params);
 			const filters = params?.filter ?? this.processFilters(model, params?.where);
 			const attributes = params?.attributes ?? Object.keys(model.rawAttributes);
-			const dataModel = await model.findAll({
+			const specs: any = {
 				attributes,
 				order,
 				offset,
 				limit: limit + 1,
 				where: filters,
-			});
-			const data = dataModel.map(item => item.get({plain: true}));
+			};
+			if (params.include) specs.include = params.include;
 
-			const total = await model.count({where: filters});
+			const dataModel = await model.findAll(specs);
+			const data = dataModel.map(item => item.get({ plain: true }));
 
-			return response.list(data, total, {limit, start: offset});
+			const total = await model.count({ where: filters });
+
+			return response.list(data, total, { limit, start: offset });
 		} catch (exc) {
 			console.error('error list', exc);
 			return response.processError(exc, target);
@@ -136,10 +139,12 @@ class Actions {
 
 	data = async (model, params, target: string) => {
 		try {
-			const dataModel = await model.findOne({where: {id: params.id}});
+			const specs: any = { where: { id: params.id } };
+			if (params.include) specs.include = params.include;
+			const dataModel = await model.findOne(specs);
 			if (!dataModel) throw 'RECORD_NOT_EXIST';
 
-			const data = dataModel.get({plain: true});
+			const data = dataModel.get({ plain: true });
 
 			return response.data(data);
 		} catch (exc) {
@@ -147,9 +152,9 @@ class Actions {
 		}
 	};
 
-	remove = async ({id}, model, target) => {
+	remove = async ({ id }, model, target) => {
 		try {
-			await model.destroy({where: {id}});
+			await model.destroy({ where: { id } });
 			return response.remove();
 		} catch (error) {
 			return response.processError(error, target);
@@ -171,9 +176,9 @@ class Actions {
 		try {
 			const values = this.getValues(model, params);
 			const insert = await model.create(values);
-			return {status: true, data: {id: insert.id}};
+			return { status: true, data: { id: insert.id } };
 		} catch (error) {
-			return {status: false, error: {error, target}};
+			return { status: false, error: { error, target } };
 		}
 	};
 
@@ -182,15 +187,14 @@ class Actions {
 			const id = params.id;
 			delete params.id;
 			const values = this.getValues(model, params);
-			await model.update(values, {where: {id}});
-			return {status: true, data: {id}};
+			await model.update(values, { where: { id } });
+			return { status: true, data: { id } };
 		} catch (error) {
-			return {status: false, error: {error, target}};
+			return { status: false, error: { error, target } };
 		}
 	};
 
 	publish = async (model, params, target) => {
-	
 		const res =
 			params?.isNew || params.new
 				? await this.create(model, params, target)
@@ -203,8 +207,7 @@ class Actions {
 	};
 
 	bulkSave = async (model, params, target: string) => {
-		
-		if (!params.length) return {status: true, data: []};
+		if (!params.length) return { status: true, data: [] };
 		const fieldsModels = Object.keys(model.rawAttributes);
 		const fieldsToTake = fieldsModels.filter(field => field !== 'id');
 
@@ -216,7 +219,7 @@ class Actions {
 			let updated = await model.bulkCreate(objectsToUpdate, {
 				updateOnDuplicate: fieldsToTake,
 			});
-			updated = updated.map(obj => obj.get({plain: true}));
+			updated = updated.map(obj => obj.get({ plain: true }));
 			const instancesIds = [];
 			const toCreate = objectsToCreate.map(item => {
 				instancesIds.push(item.id);
@@ -226,7 +229,7 @@ class Actions {
 			const objectsCreated = await model.bulkCreate(toCreate);
 
 			const objectsCreatedPlain = objectsCreated.map((obj: any, index: number) => {
-				const record = obj.get({plain: true});
+				const record = obj.get({ plain: true });
 				record.instanceId = instancesIds[index];
 				return record;
 			});
@@ -239,11 +242,11 @@ class Actions {
 				},
 			});
 
-			const data = records.map(record => record.get({plain: true}));
+			const data = records.map(record => record.get({ plain: true }));
 
 			const objects = objectsCreatedPlain.concat(data);
 
-			return {status: true, data: {entries: objects}};
+			return { status: true, data: { entries: objects } };
 		} catch (error) {
 			console.error('error bulk save', error);
 			return response.processError(error, target);

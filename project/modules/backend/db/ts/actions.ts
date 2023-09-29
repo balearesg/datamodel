@@ -101,8 +101,8 @@ class Actions {
 	};
 
 	list = async (model, params, target: string) => {
-		const limit = params?.limit ?? this._DEFAULT.limit;
-		const offset = params?.start ?? this._DEFAULT.start;
+		const limit = params?.limit ? parseInt(params.limit) : this._DEFAULT.limit;
+		const offset = params?.start ? parseInt(params.start) : this._DEFAULT.start;
 		// asc mean kind of order (DESC, ASC)
 		const order = params?.order
 			? [[params.order, params?.asc ?? 'DESC']]
@@ -195,7 +195,7 @@ class Actions {
 
 	publish = async (model, params, target) => {
 		const res =
-			params?.isNew || params.new
+			params?.isNew || params.new || !params.id
 				? await this.create(model, params, target)
 				: await this.update(model, params, target);
 

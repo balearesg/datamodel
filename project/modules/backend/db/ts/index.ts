@@ -37,7 +37,9 @@ class DataModel {
 				storage, 
 				dialect,
 				dialectOptions, 
-				initModels } = credentials;
+				initModels 
+			} = credentials;
+
 			const sequelize = new Sequelize(name, user, password, {
 				host: host,
 				dialect,

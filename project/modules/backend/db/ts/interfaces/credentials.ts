@@ -6,5 +6,8 @@ export /*bundle*/ interface ICredentials {
 	timeZone?: string | undefined | null;
 	storage?: string | undefined | null;
 	dialect: any;
+	dialectOptions: {
+		[option: string]: any;
+	}
 	initModels: any;
 }

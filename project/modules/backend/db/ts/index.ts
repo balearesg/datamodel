@@ -28,11 +28,21 @@ class DataModel {
 
 	private connectDB(credentials: ICredentials) {
 		try {
-			const { name, user, password, host, timeZone, storage, dialect, initModels } = credentials;
+			const { 
+				name, 
+				user, 
+				password, 
+				host, 
+				timeZone, 
+				storage, 
+				dialect,
+				dialectOptions, 
+				initModels } = credentials;
 			const sequelize = new Sequelize(name, user, password, {
 				host: host,
 				dialect,
 				storage,
+				dialectOptions,
 				timezone: timeZone,
 				logging: this.registerLog,
 			});

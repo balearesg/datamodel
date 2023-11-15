@@ -1,6 +1,6 @@
 import { Op } from 'sequelize';
 // import { Params } from "@app/trade-market/utils";
-import { response } from 'data-model/response';
+import { response } from '@bggroup/data-model/response';
 
 class Actions {
 	_DEFAULT = { order: 'timeCreated', limit: 30, start: 0 };
@@ -99,6 +99,8 @@ class Actions {
 
 		return filters;
 	};
+
+	// collection
 
 	list = async (model, params, target: string) => {
 		const limit = params?.limit ? parseInt(params.limit) : this._DEFAULT.limit;

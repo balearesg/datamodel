@@ -1,5 +1,5 @@
 {
-	"name": "data-model",
+	"name": "@bggroup/data-model",
 	"version": "1.0.0",
 	"title": "Websocket api for Data Models",
 	"description": "Handler ORM to process data from DATABASE",

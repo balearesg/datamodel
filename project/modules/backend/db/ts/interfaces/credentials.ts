@@ -10,4 +10,17 @@ export /*bundle*/ interface ICredentials {
 		[option: string]: any;
 	}
 	initModels: any;
+	port?: number
+}
+
+export interface IOptions {
+	host: string,
+	dialect: any,
+	storage: string | undefined | null,
+	dialectOptions: {
+		[option: string]: any;
+	},
+	timezone?: string | undefined | null,
+	logging: (msg: any) => void,
+	port?: number
 }

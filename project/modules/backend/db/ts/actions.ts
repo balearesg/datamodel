@@ -164,7 +164,7 @@ class Actions {
 		const values = {};
 		for (const field in params) {
 			const isTime = field === 'timeCreated' || field === 'timeUpdated';
-			if (model.rawAttributes.hasOwnProperty(field) && !isTime) {
+			if (model.rawAttributes.hasOwnProperty(field) && !isTime && params[field] !== null) {
 				values[field] = params[field];
 			}
 		}

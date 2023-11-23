@@ -16,7 +16,7 @@ export /*bundle*/ interface ICredentials {
 export interface IOptions {
 	host: string,
 	dialect: any,
-	storage: string | undefined | null,
+	storage?: string | undefined | null,
 	dialectOptions: {
 		[option: string]: any;
 	},

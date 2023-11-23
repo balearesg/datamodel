@@ -42,12 +42,12 @@ export /*bundle*/
 			const specs: IOptions = {
 				host: host,
 				dialect,
-				storage,
 				dialectOptions,
 				timezone: timeZone,
 				logging: this.registerLog,
 			}
-			if (port) specs.port = port
+			if (port) specs.port = port;
+			if (storage) specs.storage = storage
 			const sequelize = new Sequelize(name, user, password, specs);
 			this._models = initModels(sequelize);
 			this._sequelize = sequelize;

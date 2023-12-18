@@ -26,7 +26,7 @@ su uso.
 
 Una vez tengas incorporado en el data-models en tu proyecto se debe realizar la importación de la siguiente manera:
 
-    import {DataModel, actions} from "@bggroup/data-model/db"
+    import {DataModel, actions} from "@bgroup/data-model/db"
 
 Ya obteniendo ambos objetos podemos comenzar con el funcionamiento. A continuación se indicará el uso de cada método
 para el Data Model

@@ -1,6 +1,6 @@
 import { Op } from 'sequelize';
 // import { Params } from "@app/trade-market/utils";
-import { response } from '@bggroup/data-model/response';
+import { response } from '@bgroup/data-model/response';
 
 class Actions {
 	_DEFAULT = { order: 'timeCreated', limit: 30, start: 0 };

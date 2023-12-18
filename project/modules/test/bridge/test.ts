@@ -1,10 +1,10 @@
-import { DataModel, actions } from '@bggroup/data-model/db';
+import { DataModel, actions } from '@bgroup/data-model/db';
 import { initModels } from './tables/init-models';
 
 const { DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_TIMEZONE } = process.env;
 
 export /*actions*/ /*bundle*/
-class Test {
+	class Test {
 	connectToDB() {
 		const dbConnected: any = DataModel.connectDB({
 			dbName: DB_NAME,

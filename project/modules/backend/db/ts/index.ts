@@ -1,9 +1,9 @@
 import { Sequelize } from 'sequelize';
 import { Logs } from './logs';
-import { ICredentials } from './interfaces/credentials';
+import { ICredentials, IOptions } from './interfaces/credentials';
 
 export /*bundle*/
-class DataModel {
+	class DataModel {
 	_models;
 	get models() {
 		return this._models;
@@ -28,27 +28,27 @@ class DataModel {
 
 	private connectDB(credentials: ICredentials) {
 		try {
-			const { 
-				name, 
-				user, 
-				password, 
-				host, 
-				timeZone, 
-				storage, 
+			const {
+				name,
+				user,
+				password,
+				host,
+				timeZone,
+				storage,
 				dialect,
-				dialectOptions, 
-				initModels 
-			} = credentials;
-
-			const sequelize = new Sequelize(name, user, password, {
+				dialectOptions,
+				port,
+				initModels } = credentials;
+			const specs: IOptions = {
 				host: host,
 				dialect,
-				storage,
 				dialectOptions,
 				timezone: timeZone,
 				logging: this.registerLog,
-			});
-
+			}
+			if (port) specs.port = port;
+			if (storage) specs.storage = storage
+			const sequelize = new Sequelize(name, user, password, specs);
 			this._models = initModels(sequelize);
 			this._sequelize = sequelize;
 			this.createRelations();

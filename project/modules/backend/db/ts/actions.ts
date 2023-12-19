@@ -1,6 +1,6 @@
 import { Op } from 'sequelize';
 // import { Params } from "@app/trade-market/utils";
-import { response } from 'data-model/response';
+import { response } from '@bgroup/data-model/response';
 
 class Actions {
 	_DEFAULT = { order: 'timeCreated', limit: 30, start: 0 };
@@ -63,8 +63,8 @@ class Actions {
 				typeof elem[key] === 'object' && !Array.isArray(elem[key])
 					? this.processInternalAttributes(model, elem[key], key)
 					: Array.isArray(elem[key]) && (key === 'and' || key === 'or')
-					? this.processInternalAttributes(model, elem[key], key)
-					: elem[key];
+						? this.processInternalAttributes(model, elem[key], key)
+						: elem[key];
 
 			if (typeof value === 'string') {
 				value = { [this._OPERATORS['like']]: value };
@@ -86,8 +86,8 @@ class Actions {
 				typeof where[field] === 'object' && !Array.isArray(where[field])
 					? this.processInternalAttributes(model, where[field], field)
 					: Array.isArray(where[field]) && (field === 'and' || field === 'or')
-					? this.processInternalAttributes(model, where[field], field)
-					: where[field];
+						? this.processInternalAttributes(model, where[field], field)
+						: where[field];
 			if (typeof value === 'string') {
 				value = { [this._OPERATORS['like']]: value };
 			}
@@ -99,6 +99,8 @@ class Actions {
 
 		return filters;
 	};
+
+	// collection
 
 	list = async (model, params, target: string) => {
 		const limit = params?.limit ? parseInt(params.limit) : this._DEFAULT.limit;
@@ -164,7 +166,7 @@ class Actions {
 		const values = {};
 		for (const field in params) {
 			const isTime = field === 'timeCreated' || field === 'timeUpdated';
-			if (params[field] && model.rawAttributes.hasOwnProperty(field) && !isTime) {
+			if (model.rawAttributes.hasOwnProperty(field) && !isTime && params[field] !== null) {
 				values[field] = params[field];
 			}
 		}
@@ -174,6 +176,7 @@ class Actions {
 	create = async (model, params, target: string) => {
 		try {
 			const values = this.getValues(model, params);
+
 			const insert = await model.create(values);
 			return { status: true, data: { id: insert.id } };
 		} catch (error) {
@@ -254,4 +257,4 @@ class Actions {
 }
 
 export /*bundle*/
-const actions = new Actions();
+	const actions = new Actions();

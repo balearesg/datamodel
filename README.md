@@ -1,31 +1,35 @@
 # Data Models
 
-El proyecto se basa en objetos del modelo que manejan y gestionan las consultas recibidas de tipo objetos. Existe un objeto base llamado DataModel que se encarga de cargar los modelos definidos con sequelize o sequelize-auto, proporcionando una interfaz sencilla para interactuar con ellos. Por otro lado, la clase Action define las acciones que se deben realizar en la base de datos para efectuar el impacto deseado.
+El proyecto se basa en objetos del modelo que manejan y gestionan las consultas recibidas de tipo objetos. Existe un
+objeto base llamado DataModel que se encarga de cargar los modelos definidos con sequelize o sequelize-auto,
+proporcionando una interfaz sencilla para interactuar con ellos. Por otro lado, la clase Action define las acciones que
+se deben realizar en la base de datos para efectuar el impacto deseado.
 
-Para utilizar este proyecto, simplemente importa el DataModel en tus modelos y el objeto Action en tus acciones. De esta manera, podrás hacer uso de las consultas en cualquier parte del código, manteniendo una estructura clara y coherente.
+Para utilizar este proyecto, simplemente importa el DataModel en tus modelos y el objeto Action en tus acciones. De esta
+manera, podrás hacer uso de las consultas en cualquier parte del código, manteniendo una estructura clara y coherente.
 
-A medida que avances en el proyecto, se proporcionarán más detalles sobre el funcionamiento y las mejores prácticas para su uso.
-
+A medida que avances en el proyecto, se proporcionarán más detalles sobre el funcionamiento y las mejores prácticas para
+su uso.
 
 ## Índice
 
 1. [Instalación](#instalación)
 2. [Uso](#uso)
-5. [Agradecimientos](#agradecimientos)
-
+3. [Agradecimientos](#agradecimientos)
 
 ## Instalación
 
 1. Dentro de tu proyecto clonar este repositorio e incluirlo en el proyecto
 2. Instalar las dependencias usando: npm i o npm install
 
-
 ## Uso
+
 Una vez tengas incorporado en el data-models en tu proyecto se debe realizar la importación de la siguiente manera:
 
-    import {DataModel, actions} from "data-model/db"
+    import {DataModel, actions} from "@bgroup/data-model/db"
 
-Ya obteniendo ambos objetos podemos comenzar con el funcionamiento. A continuación se indicará el uso de cada método para el Data Model
+Ya obteniendo ambos objetos podemos comenzar con el funcionamiento. A continuación se indicará el uso de cada método
+para el Data Model
 
     - conexión a la BD de datos:
 
@@ -48,7 +52,7 @@ Ya obteniendo ambos objetos podemos comenzar con el funcionamiento. A continuaci
         ```
 
         Contiene los modelos de la BD
-    
+
     - sequelize: Usa toda funcionalidad de sequelize que requieras hacer. Por ejemplo:
 
         ```
@@ -60,7 +64,7 @@ Ya obteniendo ambos objetos podemos comenzar con el funcionamiento. A continuaci
 Ahora para actions
 
     - La propiedad DEFAULT puedes modificar los valores por defecto del order, limit, start (offset). Tiene por defecto "timeCreated", 30, 0, respectivamente
-    
+
         ```
         Actions.DEFAULT = { order: "timeCreated", limit: 30, start: 0 };
         ```
@@ -76,7 +80,7 @@ Ahora para actions
     - La función processFilters te permite construir el filtrado para realizar la consulta por sequelize
 
         ```
-        const where = { 
+        const where = {
             id: [10,30,40,50],
             date: {
                 between: ['2020-01-01','2020-12-31']
@@ -101,7 +105,7 @@ Ahora para actions
             limit: 10,
             start: 10,
             attributes: ["id", "name", "quantity"],
-            where = { 
+            where = {
                 id: [10,30,40,50],
                 date: {
                     between: ['2020-01-01','2020-12-31']
@@ -125,7 +129,7 @@ Ahora para actions
         * asc: boleano para indicar si es ascendente o descendente
         * where: formato where como el ejemplo anterior
         * attributes: indicar por un arreglo de string los atributos a mostrar
-    
+
     - La función data toma la información de un solo registro de la base de datos por medio de un id. Por ejemplo:
 
         ```
@@ -186,5 +190,5 @@ Ahora para actions
 
 Queremos agradecer a todas las personas que han contribuido a este proyecto y a los recursos que hemos utilizado.
 
-- Moisés Rodriguez
-- Jorge Contreras
+-   Moisés Rodriguez
+-   Jorge Contreras

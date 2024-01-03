@@ -1,5 +1,4 @@
 import { Op } from 'sequelize';
-// import { Params } from "@app/trade-market/utils";
 import { response } from '@bgroup/data-model/response';
 
 class Actions {

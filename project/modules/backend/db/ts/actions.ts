@@ -63,8 +63,8 @@ class Actions {
 				typeof elem[key] === 'object' && !Array.isArray(elem[key])
 					? this.processInternalAttributes(model, elem[key], key)
 					: Array.isArray(elem[key]) && (key === 'and' || key === 'or')
-						? this.processInternalAttributes(model, elem[key], key)
-						: elem[key];
+					? this.processInternalAttributes(model, elem[key], key)
+					: elem[key];
 
 			if (typeof value === 'string') {
 				value = { [this._OPERATORS['like']]: value };
@@ -86,8 +86,8 @@ class Actions {
 				typeof where[field] === 'object' && !Array.isArray(where[field])
 					? this.processInternalAttributes(model, where[field], field)
 					: Array.isArray(where[field]) && (field === 'and' || field === 'or')
-						? this.processInternalAttributes(model, where[field], field)
-						: where[field];
+					? this.processInternalAttributes(model, where[field], field)
+					: where[field];
 			if (typeof value === 'string') {
 				value = { [this._OPERATORS['like']]: value };
 			}
@@ -175,6 +175,7 @@ class Actions {
 
 	create = async (model, params, target: string) => {
 		try {
+			delete params.id;
 			const values = this.getValues(model, params);
 
 			const insert = await model.create(values);
@@ -197,10 +198,8 @@ class Actions {
 	};
 
 	publish = async (model, params, target) => {
-		const res =
-			params?.isNew || params.new || !params.id
-				? await this.create(model, params, target)
-				: await this.update(model, params, target);
+		const isNew = params?.isNew || params.new || !params.id || typeof params.id === 'string';
+		const res = isNew ? await this.create(model, params, target) : await this.update(model, params, target);
 
 		// if (!params.id) return await this.create(model, params, target);
 		// return await this.update(model, params, target);
@@ -232,7 +231,7 @@ class Actions {
 
 			const objectsCreatedPlain = objectsCreated.map((obj: any, index: number) => {
 				const record = obj.get({ plain: true });
-				record.instanceId = instancesIds[index];
+				record.__instanceId = instancesIds[index];
 				return record;
 			});
 
@@ -257,4 +256,4 @@ class Actions {
 }
 
 export /*bundle*/
-	const actions = new Actions();
+const actions = new Actions();

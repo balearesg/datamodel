@@ -186,9 +186,37 @@ Ahora para actions
         const saveAll = await actions.bulkSave(model, params, target)
         ```
 
+       
+
+ ## Implementacion de caso de uso de SQL Server:
+```ts
+
+const { DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_TIMEZONE } = process.env;
+
+const config = {
+	name: DB_NAME,
+	user: DB_USER,
+	password: DB_PASS,
+	host: DB_HOST,
+	timeZone: DB_TIMEZONE,
+	dialect: 'mssql',
+	dialectOptions: {
+		options: {
+			encrypt: false,
+			trustServerCertificate: true,
+		},
+	},
+	initModels,
+};
+
+export /*bundle*/ const DataModel = DM.get(config);
+
+```
+
 ## Agradecimientos
 
 Queremos agradecer a todas las personas que han contribuido a este proyecto y a los recursos que hemos utilizado.
 
--   Moisés Rodriguez
--   Jorge Contreras
+- Moisés Rodriguez
+- Jorge Contreras
+

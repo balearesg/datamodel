@@ -3,7 +3,7 @@ import { Logs } from './logs';
 import { ICredentials, IOptions } from './interfaces/credentials';
 
 export /*bundle*/
-	class DataModel {
+class DataModel {
 	_models;
 	get models() {
 		return this._models;
@@ -26,28 +26,39 @@ export /*bundle*/
 		this.#logs.call(msg);
 	};
 
+	stringConnection = (credentials: ICredentials) => {
+		try {
+			const { dialect, initModels, connectionString } = credentials;
+			console.log('credentials', credentials);
+			const sequelize = new Sequelize(connectionString, {
+				dialect,
+				logging: this.registerLog,
+			});
+			console.log('seq', sequelize);
+			this._models = initModels(sequelize);
+			this._sequelize = sequelize;
+			this.createRelations();
+			return { status: true };
+		} catch (error) {
+			console.error('error stringConnection', error);
+			return { status: false, error: error.message };
+		}
+	};
+
 	private connectDB(credentials: ICredentials) {
 		try {
-			const {
-				name,
-				user,
-				password,
-				host,
-				timeZone,
-				storage,
-				dialect,
-				dialectOptions,
-				port,
-				initModels } = credentials;
+			if (credentials.connectionString) return this.stringConnection(credentials);
+
+			const { name, user, password, host, dialect, dialectOptions, initModels } = credentials;
 			const specs: IOptions = {
 				host: host,
 				dialect,
 				dialectOptions,
-				timezone: timeZone,
 				logging: this.registerLog,
-			}
-			if (port) specs.port = port;
-			if (storage) specs.storage = storage
+			};
+			if (credentials.port) specs.port = credentials.port;
+			if (credentials.storage) specs.storage = credentials.storage;
+			if (credentials.timeZone) specs.timezone = credentials.timeZone;
 			const sequelize = new Sequelize(name, user, password, specs);
 			this._models = initModels(sequelize);
 			this._sequelize = sequelize;

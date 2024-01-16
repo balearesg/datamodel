@@ -1,5 +1,6 @@
-import { Op } from 'sequelize';
+import { Op, literal } from 'sequelize';
 import { response } from '@bgroup/data-model/response';
+import { IParams } from './interfaces/types';
 
 class Actions {
 	_DEFAULT = { order: 'timeCreated', limit: 30, start: 0 };
@@ -9,6 +10,23 @@ class Actions {
 
 	set DEFAULT(value) {
 		this._DEFAULT = value;
+	}
+
+	#OPERATORS_STRING = {
+		eq: '=',
+		gt: '>',
+		gte: '>=',
+		lt: '<',
+		lte: '<=',
+		and: 'AND',
+		or: 'OR',
+		between: 'BETWEEN',
+		like: 'LIKE',
+		ne: '!=',
+		notBetween: 'NOT BETWEEN',
+	};
+	get OPERATORS_STRING() {
+		return this.#OPERATORS_STRING;
 	}
 
 	_OPERATORS: any = Object.freeze({
@@ -35,6 +53,20 @@ class Actions {
 		return this._op;
 	}
 
+	isEmptyObject(value: IParams) {
+		return Reflect.ownKeys(value).length === 0 && Object.keys(value).length === 0;
+	}
+
+	processValue(value: string | number, op: string) {
+		return op === 'like' ? `'%${value}%'` : `'${value}'`;
+	}
+
+	processLiteral(filter: IParams, params: IParams, concatString: string) {
+		const value = this.processValue(params.value, params.op);
+		filter[actions.OPERATORS[params.op]] = literal(`${concatString} ${this.#OPERATORS_STRING[params.op]} ${value}`);
+		return filter;
+	}
+
 	/* filter 'and' || 'or' to process items. Else set value in the field*/
 	private processInternalAttributes = (model, where, fieldParent) => {
 		const fields = {};
@@ -50,7 +82,7 @@ class Actions {
 		return fields;
 	};
 
-	private processValidations = (model, where) => {
+	private processValidations = (model, where: IParams) => {
 		const filters: object[] = [];
 
 		where.forEach(elem => {
@@ -75,7 +107,7 @@ class Actions {
 		return filters;
 	};
 
-	processFilters = (model, where: any) => {
+	processFilters = (model, where: IParams) => {
 		const filters = {};
 		if (!where) return filters;
 		for (const field in where) {
@@ -101,7 +133,7 @@ class Actions {
 
 	// collection
 
-	list = async (model, params, target: string) => {
+	list = async (model, params: IParams, target: string) => {
 		const limit = params?.limit ? parseInt(params.limit) : this._DEFAULT.limit;
 		const offset = params?.start ? parseInt(params.start) : this._DEFAULT.start;
 		// asc mean kind of order (DESC, ASC)
@@ -129,7 +161,7 @@ class Actions {
 			const dataModel = await model.findAll(specs);
 			const data = dataModel.map(item => item.get({ plain: true }));
 
-			const total = await model.count({ where: filters });
+			const total = await model.count({ where: filters, include: specs.include ?? undefined });
 
 			return response.list(data, total, { limit, start: offset });
 		} catch (exc) {
@@ -172,7 +204,7 @@ class Actions {
 		return values;
 	};
 
-	create = async (model, params, target: string) => {
+	create = async (model, params: IParams, target: string) => {
 		try {
 			delete params.id;
 			const values = this.getValues(model, params);
@@ -184,7 +216,7 @@ class Actions {
 		}
 	};
 
-	update = async (model, params, target: string) => {
+	update = async (model, params: IParams, target: string) => {
 		try {
 			const id = params.id;
 			delete params.id;
@@ -196,7 +228,7 @@ class Actions {
 		}
 	};
 
-	publish = async (model, params, target) => {
+	publish = async (model, params: IParams, target: string) => {
 		const isNew = params?.isNew || params.new || !params.id || typeof params.id === 'string';
 		const res = isNew ? await this.create(model, params, target) : await this.update(model, params, target);
 
@@ -206,7 +238,7 @@ class Actions {
 		return response.publish(res);
 	};
 
-	bulkSave = async (model, params, target: string) => {
+	bulkSave = async (model, params: IParams, target: string) => {
 		if (!params.length) return { status: true, data: [] };
 		const fieldsModels = Object.keys(model.rawAttributes);
 		const fieldsToTake = fieldsModels.filter(field => field !== 'id');

@@ -53,6 +53,8 @@ class Actions {
 		return this._op;
 	}
 
+	#ArrayRegex = /^\[.*\]$/;
+
 	isEmptyObject(value: IParams) {
 		return Reflect.ownKeys(value).length === 0 && Object.keys(value).length === 0;
 	}
@@ -82,6 +84,10 @@ class Actions {
 		return fields;
 	};
 
+	private validIsArray = (value: string) => {
+		return this.#ArrayRegex.test(value);
+	};
+
 	private processValidations = (model, where: IParams) => {
 		const filters: object[] = [];
 
@@ -98,7 +104,9 @@ class Actions {
 					: elem[key];
 
 			if (typeof value === 'string') {
-				value = { [this._OPERATORS['like']]: value };
+				const op = this.validIsArray(value) ? 'in' : 'like';
+				const newValue = this.validIsArray(value) ? JSON.parse(value) : value;
+				value = { [this._OPERATORS[op]]: newValue };
 			}
 			fields[fieldOrOperator] = value;
 			filters.push(fields);
@@ -120,11 +128,10 @@ class Actions {
 					? this.processInternalAttributes(model, where[field], field)
 					: where[field];
 			if (typeof value === 'string') {
-				value = { [this._OPERATORS['like']]: value };
+				const op = this.validIsArray(value) ? 'in' : 'like';
+				const newValue = this.validIsArray(value) ? JSON.parse(value) : value;
+				value = { [this._OPERATORS[op]]: newValue };
 			}
-			// if (typeof value === "string") {
-			//   fieldOrOperator = this.OPERATORS[`like`]
-			// };
 			filters[fieldOrOperator] = value;
 		}
 

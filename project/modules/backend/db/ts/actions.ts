@@ -42,6 +42,13 @@ class Actions {
 		ne: Op.ne,
 		notBetween: Op.notBetween,
 		is: Op.is,
+		in: Op.in,
+		notIn: Op.notIn,
+		iLike: Op.iLike,
+		notILike: Op.notILike,
+		notLike: Op.notLike,
+		all: Op.all,
+		any: Op.any,
 	});
 
 	get OPERATORS() {

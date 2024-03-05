@@ -218,33 +218,37 @@ class Actions {
 		return values;
 	};
 
-	create = async (model, params: IParams, target: string) => {
+	create = async (model, params: IParams, target: string, transaction) => {
 		try {
 			delete params.id;
 			const values = this.getValues(model, params);
 
-			const insert = await model.create(values);
+			const insert = transaction ? await model.create(values, { transaction }) : await model.create(values);
 			return { status: true, data: { id: insert.id } };
 		} catch (error) {
 			return { status: false, error: { error, target } };
 		}
 	};
 
-	update = async (model, params: IParams, target: string) => {
+	update = async (model, params: IParams, target: string, transaction) => {
 		try {
 			const id = params.id;
 			delete params.id;
 			const values = this.getValues(model, params);
-			await model.update(values, { where: { id } });
+			transaction
+				? await model.update(values, { where: { id }, transaction })
+				: await model.update(values, { where: { id } });
 			return { status: true, data: { id } };
 		} catch (error) {
 			return { status: false, error: { error, target } };
 		}
 	};
 
-	publish = async (model, params: IParams, target: string) => {
+	publish = async (model, params: IParams, target: string, transaction) => {
 		const isNew = params?.isNew || params.new || !params.id || typeof params.id === 'string';
-		const res = isNew ? await this.create(model, params, target) : await this.update(model, params, target);
+		const res = isNew
+			? await this.create(model, params, target, transaction)
+			: await this.update(model, params, target, transaction);
 
 		// if (!params.id) return await this.create(model, params, target);
 		// return await this.update(model, params, target);
@@ -252,7 +256,7 @@ class Actions {
 		return response.publish(res);
 	};
 
-	bulkSave = async (model, params: IParams, target: string) => {
+	bulkSave = async (model, params: IParams, target: string, transaction) => {
 		if (!params.length) return { status: true, data: [] };
 		const fieldsModels = Object.keys(model.rawAttributes);
 		const fieldsToTake = fieldsModels.filter(field => field !== 'id');
@@ -262,9 +266,14 @@ class Actions {
 
 		try {
 			// const promises = objectsToUpdate.map((obj) => this.update(model, obj, target));
-			let updated = await model.bulkCreate(objectsToUpdate, {
-				updateOnDuplicate: fieldsToTake,
-			});
+			let updated = transaction
+				? await model.bulkCreate(objectsToUpdate, {
+						updateOnDuplicate: fieldsToTake,
+						transaction,
+				  })
+				: await model.bulkCreate(objectsToUpdate, {
+						updateOnDuplicate: fieldsToTake,
+				  });
 			updated = updated.map(obj => obj.get({ plain: true }));
 			const instancesIds = [];
 			const toCreate = objectsToCreate.map(item => {

@@ -198,9 +198,9 @@ class Actions {
 		}
 	};
 
-	remove = async (model, { id }, target) => {
+	remove = async (model, { id }, target, transaction) => {
 		try {
-			await model.destroy({ where: { id } });
+			transaction ? await model.destroy({ where: { id }, transaction }) : await model.destroy({ where: { id } });
 			return response.remove();
 		} catch (error) {
 			return response.processError(error, target);
@@ -219,6 +219,7 @@ class Actions {
 	};
 
 	create = async (model, params: IParams, target: string, transaction) => {
+		console.log('transaction action create--', transaction);
 		try {
 			delete params.id;
 			const values = this.getValues(model, params);

@@ -33,8 +33,10 @@ class DataModel {
 			const sequelize = new Sequelize(connectionString, {
 				dialect,
 				logging: this.registerLog,
+				pool: {
+					acquire: 300000,
+				},
 			});
-			console.log('seq', sequelize);
 			this._models = initModels(sequelize);
 			this._sequelize = sequelize;
 			this.createRelations();
@@ -55,6 +57,10 @@ class DataModel {
 				dialect,
 				dialectOptions,
 				logging: this.registerLog,
+				pool: {
+					// Número mínimo de conexiones en el pool
+					acquire: 300000, // El tiempo máximo, en milisegundos, que el pool intentará obtener una conexión antes de lanzar un error
+				},
 			};
 			if (credentials.port) specs.port = credentials.port;
 			if (credentials.storage) specs.storage = credentials.storage;

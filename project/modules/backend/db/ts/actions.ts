@@ -3,7 +3,7 @@ import { response } from '@bgroup/data-model/response';
 import { IParams } from './interfaces/types';
 
 class Actions {
-	_DEFAULT = { order: 'timeCreated', limit: 30, start: 0 };
+	_DEFAULT = { order: 'timeCreated', limit: 30, start: 0, orderDesc: 'desc' };
 	get DEFAULT() {
 		return this._DEFAULT;
 	}
@@ -24,6 +24,7 @@ class Actions {
 		like: 'LIKE',
 		ne: '!=',
 		notBetween: 'NOT BETWEEN',
+		in: 'IN',
 	};
 	get OPERATORS_STRING() {
 		return this.#OPERATORS_STRING;

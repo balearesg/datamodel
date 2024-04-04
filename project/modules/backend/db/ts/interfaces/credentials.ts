@@ -24,4 +24,5 @@ export interface IOptions {
 	timezone?: string | undefined | null;
 	logging: (msg: any) => void;
 	port?: number;
+	pool?: any;
 }

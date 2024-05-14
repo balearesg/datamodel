@@ -1,0 +1,37 @@
+import {Op} from "sequelize";
+export const OPERATORS_STRING = {
+	eq: "=",
+	gt: ">",
+	gte: ">=",
+	lt: "<",
+	lte: "<=",
+	and: "AND",
+	or: "OR",
+	between: "BETWEEN",
+	like: "LIKE",
+	ne: "!=",
+	notBetween: "NOT BETWEEN",
+	in: "IN",
+};
+
+export const OPERATORS = Object.freeze({
+	eq: Op.eq,
+	gt: Op.gt,
+	gte: Op.gte,
+	lt: Op.lt,
+	lte: Op.lte,
+	and: Op.and,
+	or: Op.or,
+	between: Op.between,
+	like: Op.substring,
+	ne: Op.ne,
+	notBetween: Op.notBetween,
+	is: Op.is,
+	in: Op.in,
+	notIn: Op.notIn,
+	iLike: Op.iLike,
+	notILike: Op.notILike,
+	notLike: Op.notLike,
+	all: Op.all,
+	any: Op.any,
+});

@@ -1,7 +1,8 @@
 import {Op, literal, Transaction, Model} from "sequelize";
 import {response} from "@bgroup/data-model/response";
-import {IParams, IModel, TRecord} from "./interfaces/types";
-
+import {IParams, IModel} from "./interfaces/types";
+import {OPERATORS_STRING, OPERATORS} from "./variables";
+import {processFilters} from "./utils";
 class Actions {
 	_DEFAULT = {order: "timeCreated", limit: 30, start: 0, orderDesc: "desc"};
 	get DEFAULT() {
@@ -12,45 +13,12 @@ class Actions {
 		this._DEFAULT = value;
 	}
 
-	#OPERATORS_STRING = {
-		eq: "=",
-		gt: ">",
-		gte: ">=",
-		lt: "<",
-		lte: "<=",
-		and: "AND",
-		or: "OR",
-		between: "BETWEEN",
-		like: "LIKE",
-		ne: "!=",
-		notBetween: "NOT BETWEEN",
-		in: "IN",
-	};
+	#OPERATORS_STRING = OPERATORS_STRING;
 	get OPERATORS_STRING() {
 		return this.#OPERATORS_STRING;
 	}
 
-	_OPERATORS: any = Object.freeze({
-		eq: Op.eq,
-		gt: Op.gt,
-		gte: Op.gte,
-		lt: Op.lt,
-		lte: Op.lte,
-		and: Op.and,
-		or: Op.or,
-		between: Op.between,
-		like: Op.substring,
-		ne: Op.ne,
-		notBetween: Op.notBetween,
-		is: Op.is,
-		in: Op.in,
-		notIn: Op.notIn,
-		iLike: Op.iLike,
-		notILike: Op.notILike,
-		notLike: Op.notLike,
-		all: Op.all,
-		any: Op.any,
-	});
+	_OPERATORS = OPERATORS;
 
 	get OPERATORS() {
 		return this._OPERATORS;
@@ -60,93 +28,6 @@ class Actions {
 	get op() {
 		return this._op;
 	}
-
-	#ArrayRegex = /^\[.*\]$/;
-
-	isEmptyObject(value: IParams) {
-		return Reflect.ownKeys(value).length === 0 && Object.keys(value).length === 0;
-	}
-
-	processValue(value: string | number, op: string) {
-		return op === "like" ? `'%${value}%'` : `'${value}'`;
-	}
-
-	processLiteral(filter: IParams, params: IParams, concatString: string) {
-		const value = this.processValue(params.value, params.op);
-		filter[actions.OPERATORS[params.op]] = literal(`${concatString} ${this.#OPERATORS_STRING[params.op]} ${value}`);
-		return filter;
-	}
-
-	/* filter 'and' || 'or' to process items. Else set value in the field*/
-	private processInternalAttributes = (model: IModel, where: IParams, fieldParent: string) => {
-		const fields = {};
-		if (fieldParent === "and" || fieldParent === "or") {
-			const result = this.processValidations(model, where);
-			return result;
-		}
-		for (const key in where) {
-			const field = this.OPERATORS[key];
-			fields[field] = where[key];
-		}
-
-		return fields;
-	};
-
-	private validIsArray = (value: string) => {
-		return this.#ArrayRegex.test(value);
-	};
-
-	private processValidations = (model: IModel, where: IParams) => {
-		const filters: object[] = [];
-
-		where.forEach(elem => {
-			const fields: object = {};
-			const key = Object.keys(elem)[0];
-			if (!model.rawAttributes.hasOwnProperty(key) && !this._OPERATORS.hasOwnProperty(key)) return;
-			const fieldOrOperator = model.rawAttributes.hasOwnProperty(key) ? key : this._OPERATORS[key];
-			let value =
-				typeof elem[key] === "object" && !Array.isArray(elem[key])
-					? this.processInternalAttributes(model, elem[key], key)
-					: Array.isArray(elem[key]) && (key === "and" || key === "or")
-					? this.processInternalAttributes(model, elem[key], key)
-					: elem[key];
-
-			if (typeof value === "string") {
-				const op = this.validIsArray(value) ? "in" : "like";
-				const newValue = this.validIsArray(value) ? JSON.parse(value) : value;
-				value = {[this._OPERATORS[op]]: newValue};
-			}
-			fields[fieldOrOperator] = value;
-			filters.push(fields);
-		});
-
-		return filters;
-	};
-
-	processFilters = (model: IModel, where: IParams) => {
-		const filters = {};
-		if (!where) return filters;
-		for (const field in where) {
-			if (!model.rawAttributes.hasOwnProperty(field) && !this.OPERATORS.hasOwnProperty(field)) continue;
-			let fieldOrOperator = model.rawAttributes.hasOwnProperty(field) ? field : this.OPERATORS[field];
-			let value =
-				typeof where[field] === "object" && !Array.isArray(where[field])
-					? this.processInternalAttributes(model, where[field], field)
-					: Array.isArray(where[field]) && (field === "and" || field === "or")
-					? this.processInternalAttributes(model, where[field], field)
-					: where[field];
-			if (typeof value === "string") {
-				const op = this.validIsArray(value) ? "in" : "like";
-				const newValue = this.validIsArray(value) ? JSON.parse(value) : value;
-				value = {[this._OPERATORS[op]]: newValue};
-			}
-			filters[fieldOrOperator] = value;
-		}
-
-		return filters;
-	};
-
-	// collection
 
 	list = async (model: IModel, params: IParams, target: string, transaction: Transaction = null) => {
 		const limit = params?.limit ? parseInt(params.limit) : this._DEFAULT.limit;
@@ -162,7 +43,7 @@ class Actions {
 
 		try {
 			//   const filters = params?.filter ?? this.processFilters(model, params);
-			const filters = params?.filter ?? this.processFilters(model, params?.where);
+			const filters = params?.filter ?? processFilters(model, params?.where);
 			const attributes = params?.attributes ?? Object.keys(model.rawAttributes);
 			const specs: any = {
 				attributes,
@@ -252,9 +133,6 @@ class Actions {
 		const res = isNew
 			? await this.create(model, params, target, transaction)
 			: await this.update(model, params, target, transaction);
-
-		// if (!params.id) return await this.create(model, params, target);
-		// return await this.update(model, params, target);
 
 		return response.publish(res);
 	};

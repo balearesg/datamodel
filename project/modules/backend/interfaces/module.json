@@ -1,0 +1,8 @@
+{
+	"name": "interfaces",
+	"platforms": ["node", "backend"],
+	"ts": {
+		"path": "ts",
+		"files": ["*"]
+	}
+}

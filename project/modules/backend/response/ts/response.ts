@@ -1,4 +1,4 @@
-import {IParams} from "@bgroup/data-model/db";
+import {IParams} from "@bgroup/data-model/interfaces";
 class Response {
 	error = (message: string, target: string) => {
 		return {

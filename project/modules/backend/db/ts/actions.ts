@@ -1,6 +1,6 @@
-import {Op, literal} from "sequelize";
+import {Op, literal, Transaction, Model} from "sequelize";
 import {response} from "@bgroup/data-model/response";
-import {IParams} from "./interfaces/types";
+import {IParams, IModel, TRecord} from "./interfaces/types";
 
 class Actions {
 	_DEFAULT = {order: "timeCreated", limit: 30, start: 0, orderDesc: "desc"};
@@ -78,7 +78,7 @@ class Actions {
 	}
 
 	/* filter 'and' || 'or' to process items. Else set value in the field*/
-	private processInternalAttributes = (model, where, fieldParent) => {
+	private processInternalAttributes = (model: IModel, where: IParams, fieldParent: string) => {
 		const fields = {};
 		if (fieldParent === "and" || fieldParent === "or") {
 			const result = this.processValidations(model, where);
@@ -96,7 +96,7 @@ class Actions {
 		return this.#ArrayRegex.test(value);
 	};
 
-	private processValidations = (model, where: IParams) => {
+	private processValidations = (model: IModel, where: IParams) => {
 		const filters: object[] = [];
 
 		where.forEach(elem => {
@@ -123,7 +123,7 @@ class Actions {
 		return filters;
 	};
 
-	processFilters = (model, where: IParams) => {
+	processFilters = (model: IModel, where: IParams) => {
 		const filters = {};
 		if (!where) return filters;
 		for (const field in where) {
@@ -148,7 +148,7 @@ class Actions {
 
 	// collection
 
-	list = async (model, params: IParams, target: string, transaction = null) => {
+	list = async (model: IModel, params: IParams, target: string, transaction: Transaction = null) => {
 		const limit = params?.limit ? parseInt(params.limit) : this._DEFAULT.limit;
 		const offset = params?.start ? parseInt(params.start) : this._DEFAULT.start;
 		// asc mean kind of order (DESC, ASC)
@@ -186,7 +186,7 @@ class Actions {
 		}
 	};
 
-	data = async (model, params, target: string, transaction = null) => {
+	data = async (model: IModel, params: IParams, target: string, transaction: Transaction = null) => {
 		try {
 			const specs: any = {where: {id: params.id}};
 			if (params.include) specs.include = params.include;
@@ -201,7 +201,7 @@ class Actions {
 		}
 	};
 
-	remove = async (model, {id}, target, transaction) => {
+	remove = async (model: IModel, {id}: IParams, target: string, transaction: Transaction = null) => {
 		try {
 			transaction ? await model.destroy({where: {id}, transaction}) : await model.destroy({where: {id}});
 			return response.remove();
@@ -210,7 +210,7 @@ class Actions {
 		}
 	};
 
-	getValues = (model, params) => {
+	getValues = (model: IModel, params: IParams) => {
 		const values = {};
 		for (const field in params) {
 			const isTime = field === "timeCreated" || field === "timeUpdated";
@@ -221,19 +221,19 @@ class Actions {
 		return values;
 	};
 
-	create = async (model, params: IParams, target: string, transaction) => {
+	create = async (model: IModel, params: IParams, target: string, transaction: Transaction = null) => {
 		try {
 			delete params.id;
 			const values = this.getValues(model, params);
 
-			const insert = transaction ? await model.create(values, {transaction}) : await model.create(values);
+			const insert: any = transaction ? await model.create(values, {transaction}) : await model.create(values);
 			return {status: true, data: {id: insert.id}};
 		} catch (error) {
 			return {status: false, error: {error, target}};
 		}
 	};
 
-	update = async (model, params: IParams, target: string, transaction) => {
+	update = async (model: IModel, params: IParams, target: string, transaction: Transaction = null) => {
 		try {
 			const id = params.id;
 			delete params.id;
@@ -247,7 +247,7 @@ class Actions {
 		}
 	};
 
-	publish = async (model, params: IParams, target: string, transaction) => {
+	publish = async (model: IModel, params: IParams, target: string, transaction: Transaction = null) => {
 		const isNew = params?.isNew || params.new || !params.id || typeof params.id === "string";
 		const res = isNew
 			? await this.create(model, params, target, transaction)
@@ -259,7 +259,7 @@ class Actions {
 		return response.publish(res);
 	};
 
-	bulkSave = async (model, params: IParams, target: string, transaction) => {
+	bulkSave = async (model: IModel, params: IParams, target: string, transaction: Transaction = null) => {
 		if (!params.length) return {status: true, data: []};
 		const fieldsModels = Object.keys(model.rawAttributes);
 		const fieldsToTake = fieldsModels.filter(field => field !== "id");
@@ -269,7 +269,7 @@ class Actions {
 
 		try {
 			// const promises = objectsToUpdate.map((obj) => this.update(model, obj, target));
-			let updated = transaction
+			let updated: any = transaction
 				? await model.bulkCreate(objectsToUpdate, {
 						updateOnDuplicate: fieldsToTake,
 						transaction,
@@ -292,7 +292,7 @@ class Actions {
 				return record;
 			});
 
-			const idsUpdated = updated.map(obj => obj.id);
+			const idsUpdated: IParams = updated.map(obj => obj.id);
 
 			const records = await model.findAll({
 				where: {

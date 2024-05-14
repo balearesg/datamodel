@@ -1,3 +1,4 @@
+import {IParams} from "@bgroup/data-model/db";
 class Response {
 	error = (message: string, target: string) => {
 		return {
@@ -13,14 +14,14 @@ class Response {
 		return this.error(exc.message ? exc.message : exc, target);
 	};
 
-	data = (data) => {
-		return { status: true, data };
+	data = (data: IParams) => {
+		return {status: true, data};
 	};
 
-	list = (data, total, { limit, start }) => {
+	list = (data: IParams, total: number, {limit, start}) => {
 		limit = limit ?? 10;
 		start = start ?? 0;
-		let next;
+		let next: number;
 		if (data.length > limit) {
 			next = !start ? limit : limit + start;
 			data.pop();
@@ -35,12 +36,12 @@ class Response {
 			},
 		};
 	};
-	publish = (res) => {
+	publish = (res: IParams) => {
 		return res;
 	};
 
 	remove = () => {
-		return { status: true };
+		return {status: true};
 	};
 }
 

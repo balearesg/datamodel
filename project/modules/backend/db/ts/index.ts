@@ -9,7 +9,7 @@ class DataModel {
 		return this._models;
 	}
 
-	static #intances: Map<string, DataModel> = new Map();
+	static #instances: Map<string, DataModel> = new Map();
 
 	_sequelize;
 	get sequelize() {
@@ -77,9 +77,9 @@ class DataModel {
 
 	static get(credentials: ICredentials) {
 		const id = `${credentials.name}-${credentials.host}`;
-		if (this.#intances.has(id)) return this.#intances.get(id);
+		if (this.#instances.has(id)) return this.#instances.get(id);
 		const db = new DataModel(credentials);
-		this.#intances.set(id, db);
+		this.#instances.set(id, db);
 		return db;
 	}
 

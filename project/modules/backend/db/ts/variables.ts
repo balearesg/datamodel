@@ -1,5 +1,5 @@
 import {Op} from "sequelize";
-export const OPERATORS_STRING = {
+export const OPERATORS_STRING: Record<string, string> = {
 	eq: "=",
 	gt: ">",
 	gte: ">=",
@@ -14,7 +14,7 @@ export const OPERATORS_STRING = {
 	in: "IN",
 };
 
-export const OPERATORS = Object.freeze({
+export const OPERATORS: Record<string, any> = {
 	eq: Op.eq,
 	gt: Op.gt,
 	gte: Op.gte,
@@ -34,4 +34,4 @@ export const OPERATORS = Object.freeze({
 	notLike: Op.notLike,
 	all: Op.all,
 	any: Op.any,
-});
+};

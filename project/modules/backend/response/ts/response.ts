@@ -18,7 +18,7 @@ class Response {
 		return {status: true, data};
 	};
 
-	list = (data: IParams, total: number, {limit, start}) => {
+	list = (data: IParams, total: number, {limit, start}: IParams) => {
 		limit = limit ?? 10;
 		start = start ?? 0;
 		let next: number;

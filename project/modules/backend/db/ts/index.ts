@@ -1,6 +1,6 @@
-import { Sequelize } from 'sequelize';
-import { Logs } from './logs';
-import { ICredentials, IOptions } from './interfaces/credentials';
+import {Sequelize} from "sequelize";
+import {Logs} from "./logs";
+import {ICredentials, IOptions} from "./interfaces/credentials";
 
 export /*bundle*/
 class DataModel {
@@ -28,8 +28,7 @@ class DataModel {
 
 	stringConnection = (credentials: ICredentials) => {
 		try {
-			const { dialect, initModels, connectionString } = credentials;
-			console.log('credentials', credentials);
+			const {dialect, initModels, connectionString} = credentials;
 			const sequelize = new Sequelize(connectionString, {
 				dialect,
 				logging: this.registerLog,
@@ -40,10 +39,10 @@ class DataModel {
 			this._models = initModels(sequelize);
 			this._sequelize = sequelize;
 			this.createRelations();
-			return { status: true };
+			return {status: true};
 		} catch (error) {
-			console.error('error stringConnection', error);
-			return { status: false, error: error.message };
+			console.error("error stringConnection", error);
+			return {status: false, error: error.message};
 		}
 	};
 
@@ -51,7 +50,7 @@ class DataModel {
 		try {
 			if (credentials.connectionString) return this.stringConnection(credentials);
 
-			const { name, user, password, host, dialect, dialectOptions, initModels } = credentials;
+			const {name, user, password, host, dialect, dialectOptions, initModels} = credentials;
 			const specs: IOptions = {
 				host: host,
 				dialect,
@@ -69,10 +68,10 @@ class DataModel {
 			this._models = initModels(sequelize);
 			this._sequelize = sequelize;
 			this.createRelations();
-			return { status: true };
+			return {status: true};
 		} catch (error) {
-			console.error('error', error);
-			return { status: false, error: error.message };
+			console.error("error", error);
+			return {status: false, error: error.message};
 		}
 	}
 

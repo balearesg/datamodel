@@ -1,7 +1,7 @@
 {
 	"name": "data-model",
 	"scope": "bgroup",
-	"version": "1.0.7",
+	"version": "1.0.8",
 	"title": "Websocket api for Data Models",
 	"description": "Handler ORM to process data from DATABASE",
 	"author": "",

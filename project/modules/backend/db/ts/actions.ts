@@ -13,12 +13,12 @@ class Actions {
 		this._DEFAULT = value;
 	}
 
-	#OPERATORS_STRING = OPERATORS_STRING;
+	#OPERATORS_STRING: Record<string, string> = OPERATORS_STRING;
 	get OPERATORS_STRING() {
 		return this.#OPERATORS_STRING;
 	}
 
-	_OPERATORS = OPERATORS;
+	_OPERATORS: Record<string, unknown> = OPERATORS;
 
 	get OPERATORS() {
 		return this._OPERATORS;
@@ -45,7 +45,7 @@ class Actions {
 			//   const filters = params?.filter ?? this.processFilters(model, params);
 			const filters = params?.filter ?? processFilters(model, params?.where);
 			const attributes = params?.attributes ?? Object.keys(model.rawAttributes);
-			const specs: any = {
+			const specs: IParams = {
 				attributes,
 				order,
 				offset,
@@ -58,7 +58,7 @@ class Actions {
 			const dataModel = await model.findAll(specs);
 			const data = dataModel.map(item => item.get({plain: true}));
 
-			const total = await model.count({where: filters, include: specs.include ?? undefined});
+			const total: any = await model.count({where: filters, include: specs.include ?? undefined});
 
 			return response.list(data, total, {limit, start: offset});
 		} catch (exc) {

@@ -99,7 +99,7 @@ class Actions {
 	private processValidations = (model, where: IParams) => {
 		const filters: object[] = [];
 
-		where.forEach(elem => {
+		where.forEach((elem) => {
 			const fields: object = {};
 			const key = Object.keys(elem)[0];
 			if (!model.rawAttributes.hasOwnProperty(key) && !this._OPERATORS.hasOwnProperty(key)) return;
@@ -108,8 +108,8 @@ class Actions {
 				typeof elem[key] === 'object' && !Array.isArray(elem[key])
 					? this.processInternalAttributes(model, elem[key], key)
 					: Array.isArray(elem[key]) && (key === 'and' || key === 'or')
-					? this.processInternalAttributes(model, elem[key], key)
-					: elem[key];
+						? this.processInternalAttributes(model, elem[key], key)
+						: elem[key];
 
 			if (typeof value === 'string') {
 				const op = this.validIsArray(value) ? 'in' : 'like';
@@ -133,8 +133,8 @@ class Actions {
 				typeof where[field] === 'object' && !Array.isArray(where[field])
 					? this.processInternalAttributes(model, where[field], field)
 					: Array.isArray(where[field]) && (field === 'and' || field === 'or')
-					? this.processInternalAttributes(model, where[field], field)
-					: where[field];
+						? this.processInternalAttributes(model, where[field], field)
+						: where[field];
 			if (typeof value === 'string') {
 				const op = this.validIsArray(value) ? 'in' : 'like';
 				const newValue = this.validIsArray(value) ? JSON.parse(value) : value;
@@ -174,7 +174,7 @@ class Actions {
 			if (params.include) specs.include = params.include;
 
 			const dataModel = await model.findAll(specs);
-			const data = dataModel.map(item => item.get({ plain: true }));
+			const data = dataModel.map((item) => item.get({ plain: true }));
 
 			const total = await model.count({ where: filters, include: specs.include ?? undefined });
 
@@ -199,7 +199,7 @@ class Actions {
 		}
 	};
 
-	remove = async (model, { id }, target, transaction) => {
+	remove = async (model, { id }, target, transaction?) => {
 		try {
 			transaction ? await model.destroy({ where: { id }, transaction }) : await model.destroy({ where: { id } });
 			return response.remove();
@@ -219,7 +219,7 @@ class Actions {
 		return values;
 	};
 
-	create = async (model, params: IParams, target: string, transaction) => {
+	create = async (model, params: IParams, target: string, transaction?) => {
 		console.log('transaction action create--', transaction);
 		try {
 			delete params.id;
@@ -232,7 +232,7 @@ class Actions {
 		}
 	};
 
-	update = async (model, params: IParams, target: string, transaction) => {
+	update = async (model, params: IParams, target: string, transaction?) => {
 		try {
 			const id = params.id;
 			delete params.id;
@@ -246,7 +246,7 @@ class Actions {
 		}
 	};
 
-	publish = async (model, params: IParams, target: string, transaction) => {
+	publish = async (model, params: IParams, target: string, transaction?) => {
 		const isNew = params?.isNew || params.new || !params.id || typeof params.id === 'string';
 		const res = isNew
 			? await this.create(model, params, target, transaction)
@@ -258,13 +258,13 @@ class Actions {
 		return response.publish(res);
 	};
 
-	bulkSave = async (model, params: IParams, target: string, transaction) => {
+	bulkSave = async (model, params: IParams, target: string, transaction?) => {
 		if (!params.length) return { status: true, data: [] };
 		const fieldsModels = Object.keys(model.rawAttributes);
-		const fieldsToTake = fieldsModels.filter(field => field !== 'id');
+		const fieldsToTake = fieldsModels.filter((field) => field !== 'id');
 
-		const objectsToCreate = params.filter(obj => !obj.id || (obj.id && typeof obj.id === 'string'));
-		const objectsToUpdate = params.filter(obj => obj.id && typeof obj.id === 'number');
+		const objectsToCreate = params.filter((obj) => !obj.id || (obj.id && typeof obj.id === 'string'));
+		const objectsToUpdate = params.filter((obj) => obj.id && typeof obj.id === 'number');
 
 		try {
 			// const promises = objectsToUpdate.map((obj) => this.update(model, obj, target));
@@ -272,13 +272,13 @@ class Actions {
 				? await model.bulkCreate(objectsToUpdate, {
 						updateOnDuplicate: fieldsToTake,
 						transaction,
-				  })
+					})
 				: await model.bulkCreate(objectsToUpdate, {
 						updateOnDuplicate: fieldsToTake,
-				  });
-			updated = updated.map(obj => obj.get({ plain: true }));
+					});
+			updated = updated.map((obj) => obj.get({ plain: true }));
 			const instancesIds = [];
-			const toCreate = objectsToCreate.map(item => {
+			const toCreate = objectsToCreate.map((item) => {
 				instancesIds.push(item.id);
 				delete item.id;
 				return item;
@@ -291,7 +291,7 @@ class Actions {
 				return record;
 			});
 
-			const idsUpdated = updated.map(obj => obj.id);
+			const idsUpdated = updated.map((obj) => obj.id);
 
 			const records = await model.findAll({
 				where: {
@@ -299,7 +299,7 @@ class Actions {
 				},
 			});
 
-			const data = records.map(record => record.get({ plain: true }));
+			const data = records.map((record) => record.get({ plain: true }));
 
 			const objects = objectsCreatedPlain.concat(data);
 

@@ -220,7 +220,6 @@ class Actions {
 	};
 
 	create = async (model, params: IParams, target: string, transaction?) => {
-		console.log('transaction action create--', transaction);
 		try {
 			delete params.id;
 			const values = this.getValues(model, params);

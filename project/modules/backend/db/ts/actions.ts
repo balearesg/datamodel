@@ -1,8 +1,8 @@
-import { Op,  Transaction } from 'sequelize';
 import { response } from '@bgroup/data-model/response';
-import { IParams, IModel } from './interfaces/types';
-import { OPERATORS_STRING, OPERATORS } from './variables';
+import { Op, Transaction } from 'sequelize';
+import { IModel, IParams } from './interfaces/types';
 import { processFilters } from './utils';
+import { OPERATORS, OPERATORS_STRING } from './variables';
 class Actions {
 	_DEFAULT = { order: 'timeCreated', limit: 30, start: 0, orderDesc: 'desc' };
 	get DEFAULT() {
@@ -107,6 +107,17 @@ class Actions {
 	create = async (model: IModel, params: IParams, target: string, transaction: Transaction = null) => {
 		try {
 			delete params.id;
+			const values = this.getValues(model, params);
+
+			const insert: any = transaction ? await model.create(values, { transaction }) : await model.create(values);
+			return { status: true, data: { id: insert.id } };
+		} catch (error) {
+			return { status: false, error: { error, target } };
+		}
+	};
+
+	insert = async (model: IModel, params: IParams, target: string, transaction: Transaction = null) => {
+		try {
 			const values = this.getValues(model, params);
 
 			const insert: any = transaction ? await model.create(values, { transaction }) : await model.create(values);

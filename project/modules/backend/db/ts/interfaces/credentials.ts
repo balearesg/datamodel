@@ -1,4 +1,4 @@
-export /*bundle*/ interface ICredentials {
+export /*bundle*/ interface ISettings {
 	name: string;
 	user: string;
 	password: string;
